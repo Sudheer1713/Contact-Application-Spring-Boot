@@ -32,69 +32,58 @@ public class ContactServiceImpl implements ContactService {
 		BeanUtils.copyProperties(form, entity);
 		entity.setActiveSw("Y");
 		contactRepo.save(entity);
-
 		if (entity.getContactId() != null) {
 			return "SUCCESS";
 		}
-
 		return "FAILURE";
 	}
 
 	@Override
 	public List<ContactForm> viewContacts() {
-		List<ContactForm> listOfcontacts = new ArrayList<>();
-		List<Contact> contact = contactRepo.findAll();
-		for (Contact entity : contact) {
+
+		List<ContactForm> dataList = new ArrayList<>();
+
+		List<Contact> contacts = contactRepo.findAll();
+
+//		for(Contact contact : contacts)
+//		{
+//			ContactForm form = new ContactForm();
+//			BeanUtils.copyProperties(contact, form);
+//			dataList.add(form);
+//		}
+
+		/********* OR ************/
+
+		contacts.forEach(c -> {
+
 			ContactForm form = new ContactForm();
-			BeanUtils.copyProperties(entity, form);
-			listOfcontacts.add(form);
+			BeanUtils.copyProperties(c, form);
+			dataList.add(form);
 
-		}
+		});
 
-		return listOfcontacts;
+		return dataList;
 	}
 
 	@Override
 	public ContactForm editContact(Integer conatctId) {
 
-		Optional<Contact> contact = contactRepo.findById(conatctId);
-
-		if (contact.isPresent()) {
-			Contact contactEntity = contact.get();
-			contactRepo.save(contactEntity);
+		Optional<Contact> findAll = contactRepo.findById(conatctId);
+		if (findAll.isPresent()) {
+			Contact contact = findAll.get();
 			ContactForm form = new ContactForm();
-			BeanUtils.copyProperties(contactEntity, form);
+			BeanUtils.copyProperties(contact, form);
 			return form;
 		}
 		return null;
-
+		
 	}
 
 	@Override
 	public List<ContactForm> deleteContact(Integer conatctId) {
 
 		contactRepo.deleteById(conatctId);
-
-		// view all contacts
-		List<ContactForm> dataList = new ArrayList<>();
-		List<Contact> contact = contactRepo.findAll();
-
-		/** using java 8 lambdas **/
-		contact.stream().forEach(r -> {
-
-			ContactForm form = new ContactForm();
-			BeanUtils.copyProperties(r, form);
-			dataList.add(form);
-		});
-
-		/** using foreach **/
-//		for (Contact contactEntity : contact) {
-//			ContactForm form = new ContactForm();
-//			BeanUtils.copyProperties(contactEntity, form);
-//			dataList.add(form);
-//		}
-
-		return dataList;
+		return viewContacts();
 	}
 
 }

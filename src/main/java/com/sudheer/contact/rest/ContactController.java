@@ -36,7 +36,9 @@ public class ContactController {
 
 	@GetMapping("/viewContacs")
 	public List<ContactForm> viewContacts() {
-
+        
+		System.out.println("**View Contacts Method**");
+		
 		List<ContactForm> contacts = service.viewContacts();
 
 		return contacts;
